@@ -2,85 +2,67 @@
 //  EntryListTableViewController.swift
 //  NotificationPatternsJournal
 //
-//  Created by Trevor Walker on 2/4/20.
+//  Created by Aaron Prestidge on 3/3/20.
 //  Copyright © 2020 Trevor Walker. All rights reserved.
 //
 
 import UIKit
-
-// MARK: - Notification Keys
+//Assigning a name to our notification that can be used across the app - aka "GLobal Property"
 let notificationKey = Notification.Name(rawValue: "didChangeHappiness")
 
 class EntryListTableViewController: UITableViewController {
-    
-    // MARK: - IBOutlets
-    @IBOutlet weak var happinessLabel: UILabel!
-    
-    // MARK: - Properties
+
     var averageHappiness: Int = 0 {
-        /*
-         Everytime that we set out happiness level we post a notification that contains out notificationKey and our averageHappiness
-         */
+        //PROPERTY OBSERVER:
         didSet {
-            NotificationCenter.default.post(name: notificationKey, object: averageHappiness)
-            happinessLabel.text = "Average Happiness: \(averageHappiness)"
+            //runs the following each time averageHappiness is set or reset:
+            NotificationCenter.default.post(name: notificationKey, object: self.averageHappiness)
         }
     }
     
-    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        updateHappiness()
+
     }
-    
-    
+
     // MARK: - Table view data source
-    
+
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return EntryController.shared.entries.count
+        
+        return EntryController.entries.count
     }
-    
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //Casting our cell as a type EntryTableViewCell. If this fails then we just return a blank cell
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "EntryCell", for: indexPath) as? EntryTableViewCell else {return UITableViewCell()}
-        //grabbing out entries
-        let entries = EntryController.shared.entries
-        //grabbing the entry that we want
-        let entry = entries[indexPath.row]
-        //passing our entry to out function setEntry
-        cell.setEntry(entry: entry, averageHappiness: averageHappiness)
-        /* setting our cell's delegate equal to self.
-         We can do this because of our EntryTableViewControllerProtocol Extension
-         */
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "EntryCell", for: indexPath) as? EntryCellTableViewCell else {return UITableViewCell()}
+        let entry = EntryController.entries[indexPath.row]
+        cell.setEntry(entry: entry, averageHappiness: 0)
+        //Taking thecell property from the EntryController and setting it equal to itself: Assigning the delegate
         cell.delegate = self
         
         return cell
     }
     
-    // MARK: - Update Happiness Function
-    func updateHappiness() {
-        var happinessTotal = 0
-        //loops through all of our entries
-        for entry in EntryController.shared.entries {
-            //If our entrys isIncluded is == true, then we add its happiness to happiness total
+    func updateAverageHappiness() {
+        var totalHappiness = 0
+        for entry in EntryController.entries {
             if entry.isIncluded {
-                happinessTotal += entry.happiness
+            totalHappiness += entry.happiness
             }
         }
-        //calculates our average happienss
-        averageHappiness = happinessTotal / EntryController.shared.entries.count
+        averageHappiness = totalHappiness / EntryController.entries.count
     }
-}
 
-// MARK: - EntryTableViewCellProtocol Extension
-    //This extention inherits from EntryTableViewCellProtocol, which is declared on EntryTableViewCell, allowing us to get access to the tappedCell Function
-extension EntryListTableViewController: EntryTableViewCellProtocol {
-    func tappedCell(cell: EntryTableViewCell) {
-        guard let indexPath = tableView.indexPath(for: cell) else {return}
-        let entry = EntryController.shared.entries[indexPath.row]
-        EntryController.shared.updateEntry(entry: entry)
-        updateHappiness()
+}//END OF CLASS
+
+//Extending our class to include the following instructions:
+extension EntryListTableViewController: EntryTableViewCellDelegate {
+    //creating the function to be carried out by the delegate:
+    func switchToggledOnCell(cell: EntryCellTableViewCell) {
+        guard let entry = cell.entry else {return}
+        EntryController.updateEntry(entry: entry)
+        updateAverageHappiness()
         cell.updateUI(averageHappiness: averageHappiness)
     }
+    
+    
 }
