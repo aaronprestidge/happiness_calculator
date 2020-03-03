@@ -7,8 +7,9 @@
 //
 
 import UIKit
-
+//Declaring a protocol and allowing it to use class le
 protocol EntryTableViewCellDelegate: class {
+    //creating a job that the tableViewCell (boss) can tell our delegate to carry out:
     func switchToggledOnCell(cell: EntryCellTableViewCell)
 }
 
@@ -23,6 +24,8 @@ class EntryCellTableViewCell: UITableViewCell {
     
     //MARK: - PROPERTIES
     var entry: Entry?
+    
+    //Create the delegate and specifying the type to be of EntryTableViewCellDelegate:
     weak var delegate: EntryTableViewCellDelegate?
     
     
@@ -30,9 +33,10 @@ class EntryCellTableViewCell: UITableViewCell {
     func setEntry(entry: Entry, averageHappiness: Int) {
         self.entry = entry
         updateUI(averageHappiness: averageHappiness)
+        createObserver()
     }
     
-    @objc func updateUI(averageHappiness: Int) {
+    func updateUI(averageHappiness: Int) {
         guard let entry = entry else {return}
         titleLabel.text = entry.title
         isEnabledSwitch.isOn = entry.isIncluded
@@ -40,10 +44,17 @@ class EntryCellTableViewCell: UITableViewCell {
     }
     
     func createObserver() {
-        NotificationCenter.default.addObserver(self, selector: #selector(updateUI), name: notificationKey, object: nil)
+        //With the observer created, once triggered, the observer executes the following recalculation:
+        NotificationCenter.default.addObserver(self, selector: #selector(recalculateHappiness), name: notificationKey, object: nil)
+    }
+    
+    @objc func recalculateHappiness(notification:  NSNotification) {
+        guard let averageHappiness = notification.object as? Int else {return}
+        updateUI(averageHappiness: averageHappiness)
     }
 
     @IBAction func toggledIsIncluded(_ sender: Any) {
+        //Passing information to the delegate - which tells the delegate what to do.
         delegate?.switchToggledOnCell(cell: self)
     }
     

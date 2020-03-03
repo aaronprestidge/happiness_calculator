@@ -12,9 +12,9 @@ import Foundation
 class EntryController {
     
     static var entries: [Entry] =  {
-        var entry1 = Entry(title: "Reading", happiness: 7, isIncluded: true)
-        var entry2 = Entry(title: "Riding my bike", happiness: 10, isIncluded: false)
-        var entry3 = Entry(title: "Waking up", happiness: 1, isIncluded: true)
+        var entry1 = Entry(title: "Reading", happiness: 5, isIncluded: false)
+        var entry2 = Entry(title: "Riding my bike", happiness: 3, isIncluded: false)
+        var entry3 = Entry(title: "Waking up", happiness: 4, isIncluded: false)
         var entry4 = Entry(title: "Reading documentation", happiness: 10, isIncluded: false)
         return [entry1, entry2, entry3, entry4]
     }()

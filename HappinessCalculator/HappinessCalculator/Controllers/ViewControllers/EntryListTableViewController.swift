@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+//Assigning a name to our notification that can be used across the app - aka "GLobal Property"
 let notificationKey = Notification.Name(rawValue: "didChangeHappiness")
 
 class EntryListTableViewController: UITableViewController {
@@ -15,6 +15,7 @@ class EntryListTableViewController: UITableViewController {
     var averageHappiness: Int = 0 {
         //PROPERTY OBSERVER:
         didSet {
+            //runs the following each time averageHappiness is set or reset:
             NotificationCenter.default.post(name: notificationKey, object: self.averageHappiness)
         }
     }
@@ -35,7 +36,7 @@ class EntryListTableViewController: UITableViewController {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "EntryCell", for: indexPath) as? EntryCellTableViewCell else {return UITableViewCell()}
         let entry = EntryController.entries[indexPath.row]
         cell.setEntry(entry: entry, averageHappiness: 0)
-        
+        //Taking thecell property from the EntryController and setting it equal to itself: Assigning the delegate
         cell.delegate = self
         
         return cell
@@ -52,7 +53,10 @@ class EntryListTableViewController: UITableViewController {
     }
 
 }//END OF CLASS
+
+//Extending our class to include the following instructions:
 extension EntryListTableViewController: EntryTableViewCellDelegate {
+    //creating the function to be carried out by the delegate:
     func switchToggledOnCell(cell: EntryCellTableViewCell) {
         guard let entry = cell.entry else {return}
         EntryController.updateEntry(entry: entry)
