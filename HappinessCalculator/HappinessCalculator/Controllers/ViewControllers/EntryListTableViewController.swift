@@ -1,0 +1,38 @@
+//
+//  EntryListTableViewController.swift
+//  NotificationPatternsJournal
+//
+//  Created by Aaron Prestidge on 3/3/20.
+//  Copyright © 2020 Trevor Walker. All rights reserved.
+//
+
+import UIKit
+
+class EntryListTableViewController: UITableViewController {
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+    }
+
+    // MARK: - Table view data source
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        return EntryController.entries.count
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "EntryCell", for: indexPath) as? EntryCellTableViewCell else {return UITableViewCell()}
+        let entry = EntryController.entries[indexPath.row]
+        cell.setEntry(entry: entry, averagrHappiness: 0)
+
+        
+
+        return cell
+    }
+
+
+   
+
+}
